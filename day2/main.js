@@ -15,35 +15,78 @@ d3.csv('台積電.csv',nan).then(
     //debugger;
   }
 )
+function setupcanvas(data){
+const width = 400;
+const height = 500;
+const chart_margin = { top: 80, right: 40, bottom: 40, left: 80 };
+const chart_width = width - (chart_margin.left + chart_margin.right);
+const chart_height = height - (chart_margin.top + chart_margin.bottom);
 
-function setupcanvas(bar){
-  const width = 400;
-  const height = 500;
-  const chart_margin = {top:80,right:40,bottom:40,left:80};
-  const chart_width = width - (chart_margin.left+chart_margin.right);
-  const chart_height = height - (chart_margin.top+chart_margin.bottom);
-  
-  const this_svg = d3.select('.bar-chart-container').append('svg')
-  .attr('width', width).attr('height',height)
+const svg = d3.select('.bar-chart-container')
+  .append('svg')
+  .attr('width', width)
+  .attr('height', height)
   .append('g')
-  .attr('transform',`translate(${chart_margin.left},${chart_margin.top})`);
+  .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`);
 
-  //const flattenedData = barchardata.flat();
-  const x = d3.scaleBand()
-      .domain([0,chart_width]) // descending frequency
-      .range([chart_margin.left, width - chart_margin.right])
-      .padding(0.1);
-  // console.log(d3.max([bar.y108,bar.y109,bar.y110]))
-  const y = d3.scaleLinear()
-      .domain([0, d3.max([bar.y108,bar.y109,bar.y110])])
-      .range([height - chart_margin.bottom, chart_margin.top]);
-  const bars = this_svg.selectAll('.bar')
-                        .data([bar.y108,bar.y109,bar.y110])
-                        .enter()
-                        .append('rect')
-                        .attr('class','bar')
-                        .attr('y',0).attr('x',d=>x(bar))
-                        .attr('width',x=>y(bar))
-                        .attr('height',x.bandwidth())
-                        .style('fill,blue');
-                      }
+const keys = Object.keys(data);
+const values = Object.values(data).map(d => parseInt(d.replace(',', ''))); // 將數字字串轉換為數字
+
+const yScale = d3.scaleLinear()
+  .domain([0, d3.max(values)])
+  .range([chart_height, 0]);
+
+const xScale = d3.scaleBand()
+  .domain(keys)
+  .rangeRound([0, chart_width])
+  .padding(0.1);
+
+const bars = svg.selectAll('.bar')
+  .data(values)
+  .enter()
+  .append('rect')
+  .attr('class', 'bar')
+  .attr('x', (d, i) => xScale(keys[i]))
+  .attr('y', d => yScale(d))
+  .attr('width', xScale.bandwidth())
+  .attr('height', d => chart_height - yScale(d))
+  .style('fill', 'blue');
+
+
+}
+
+// function setupcanvas(bar){
+//   const data = [bar.y108,bar.y109,bar.y110]
+//   const key = Object.keys(bar)
+//   const width = 400;
+//   const height = 500;
+//   const chart_margin = {top:80,right:40,bottom:40,left:80};
+//   const chart_width = width - (chart_margin.left+chart_margin.right);
+//   const chart_height = height - (chart_margin.top+chart_margin.bottom);
+  
+//   const this_svg = d3.select('.bar-chart-container').append('svg')
+//   .attr('width', width).attr('height',height)
+//   .append('g')
+//   .attr('transform',`translate(${chart_margin.left},${chart_margin.top})`);
+  
+//   const ymax = d3.max([bar.y108, bar.y109, bar.y110]);
+//   const yscale_v3 = d3.scaleLinear()
+//   .domain([0, ymax])
+//   .range([0, chart_height]);
+
+//   const xScale = d3.scaleBand()
+//   .domain(['y108', 'y109', 'y110'])
+//   .rangeRound([0, chart_width])
+//   .paddingInner(0.25);
+
+//   const bars = this_svg.selectAll('.bar')
+//           .data(bar)
+//           .enter()
+//           .append('rect')
+//           .attr('class', 'bar')
+//           .attr('y', 0)
+//           .attr('x', d => xScale(key)) // 使用 xScale 函式
+//           .attr('width', x => yscale_v3(data)) // 使用 yscale_v3 函式
+//           .attr('height', xScale.bandwidth())
+//           .style('fill', 'blue'); // 正確的 fill 屬性寫
+// }
