@@ -3,9 +3,9 @@ const parseNA = string => (string === 'NA'?undefined:string);
 
 function nan(d){
   return{
-    y108:parseNA(d.y108),
-    y109:parseNA(d.y109),
-    y110:parseNA(d.y110),
+    '108':parseNA(d.y108),
+    '109':parseNA(d.y109),
+    '110':parseNA(d.y110),
   }
 }
 d3.csv('台積電.csv',nan).then(
@@ -52,7 +52,19 @@ const bars = svg.selectAll('.bar')
   .attr('height', d => chart_height - yScale(d))
   .style('fill', 'blue');
 
+const header = svg.append('g').attr('class','bar-header')
+  .attr('transform',`translate(${+chart_margin.top/2},${-chart_margin.right/2})`).append('text');
+header.append('tspan').text('營業銷貨收入(億)').style('font-size','2em');
 
+const xAxis=d3.axisBottom(xScale).tickSizeInner(-chart_height).tickSizeOuter(0).tickSize(0);
+const xAxisDraw=svg.append('g') .attr('transform', `translate(0, ${chart_height})`) // 將 x 軸向下平移至圖表底部
+.attr('class','xaxis').call(xAxis);
+
+const yAxis=d3.axisLeft(yScale).tickSizeInner(-chart_width).tickFormat((y) => (y * 100).toFixed());
+const yAxisDraw=svg.append('g').attr('class','yaxis').call(yAxis)
+;
+
+yAxisDraw.selectAll('text').attr('dx','-0.6em');
 }
 
 // function setupcanvas(bar){
@@ -72,10 +84,10 @@ const bars = svg.selectAll('.bar')
 //   const ymax = d3.max([bar.y108, bar.y109, bar.y110]);
 //   const yscale_v3 = d3.scaleLinear()
 //   .domain([0, ymax])
-//   .range([0, chart_height]);
+//   .range([chart_height, 0]);
 
 //   const xScale = d3.scaleBand()
-//   .domain(['y108', 'y109', 'y110'])
+//   .domain(keys)
 //   .rangeRound([0, chart_width])
 //   .paddingInner(0.25);
 
