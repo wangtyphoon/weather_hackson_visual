@@ -8,6 +8,6 @@ def detect_csv_encoding(file_path):
     return encoding
 
 # 使用範例
-csv_file_path = '台積電.csv'
+csv_file_path = '活頁簿2.csv'
 encoding = detect_csv_encoding(csv_file_path)
 print(f"CSV 編碼方式: {encoding}")

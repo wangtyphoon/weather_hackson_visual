@@ -12,7 +12,7 @@ function nan(d) {
 }
 
 // 使用 d3.csv() 方法從 '台積電.csv' 讀取資料，並在讀取完成後執行指定的回呼函式
-d3.csv('台積電.csv', nan).then(res => {
+d3.csv('test.csv', nan).then(res => {
   console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
   setupcanvas(res[0]); // 調用 setupcanvas 函式，傳入從 CSV 檔案讀取的資料的第一個物件
   //debugger;
