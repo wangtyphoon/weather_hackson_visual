@@ -15,10 +15,10 @@
 //   const ymax = d3.max([bar.y108, bar.y109, bar.y110]);
 //   const yscale_v3 = d3.scaleLinear()
 //   .domain([0, ymax])
-//   .range([0, chart_height]);
+//   .range([chart_height, 0]);
 
 //   const xScale = d3.scaleBand()
-//   .domain(['y108', 'y109', 'y110'])
+//   .domain(keys)
 //   .rangeRound([0, chart_width])
 //   .paddingInner(0.25);
 
