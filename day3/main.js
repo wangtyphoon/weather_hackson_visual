@@ -1,127 +1,187 @@
-// 定義一個函式 parseNA，用於將字串 'NA' 轉換為 undefined
 const parseNA = string => (string === 'NA' ? undefined : string);
 
 // 定義一個函式 nan，將傳入的物件 d 中的特定屬性值進行 parseNA 轉換
 function nan(d) {
   return {
-    '108': parseNA(d.y108), // 將屬性 y108 的值進行 parseNA 轉換
-    '109': parseNA(d.y109), // 將屬性 y109 的值進行 parseNA 轉換
-    '110': parseNA(d.y110), // 將屬性 y110 的值進行 parseNA 轉換
-    'class':d.class
+    'category': parseNA(d.category), // 將屬性 category 的值進行 parseNA 轉換
+    'name': parseNA(d.name), // 將屬性 name 的值進行 parseNA 轉換
+    'value': parseNA(d.value), // 將屬性 value 的值進行 parseNA 轉換
   };
 }
 
-// 使用 d3.csv() 方法從 '台積電.csv' 讀取資料，並在讀取完成後執行指定的回呼函式
-d3.csv('test.csv', nan).then(res => {
+// 使用 d3.csv() 方法從 'example.csv' 讀取資料，並在讀取完成後執行指定的回呼函式
+d3.csv('example.csv', nan).then(res => {
   console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
-  setupcanvas(res[0]); // 調用 setupcanvas 函式，傳入從 CSV 檔案讀取的資料的第一個物件
-  //debugger;
+  treemap(res);
+
+  // 印出轉換後的結果
 });
 
-// 定義函式 setupcanvas，用於設置畫布
-function setupcanvas(data) {
-  const width = 400; // 設定畫布的寬度為 400 像素
-  const height = 500; // 設定畫布的高度為 500 像素
+function treemap(res) {
+  const width = 800; // 設定畫布的寬度為 800 像素
+  const height = 600; // 設定畫布的高度為 600 像素
   const chart_margin = { top: 80, right: 40, bottom: 40, left: 80 }; // 設定圖表的邊距，包含上、右、下、左四個方向的邊距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 計算圖表的寬度，即畫布寬度減去左右邊距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 計算圖表的高度，即畫布高度減去上下邊距
 
-  // 在 class 為 'bar-chart-container' 的元素中創建一個 svg 元素，並設置寬度和高度
   const svg = d3.select('.bar-chart-container')
     .append('svg') // 創建 svg 元素
     .attr('width', width) // 設定 svg 元素的寬度
     .attr('height', height) // 設定 svg 元素的高度
     .append('g') // 在 svg 元素中創建一個 g 元素，用於放置圖表元素
+    .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+    .attr("font-family", "sans-serif")
+    .attr("font-size", 12)
     .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`); // 設定 g 元素的平移位置，以適應圖表邊距
 
-  const keys = Object.keys(data); // 取得資料物件中的屬性名稱，並存放在 keys 陣列中
-  const values = Object.values(data).map(d => parseInt(d.replace(',', ''))); // 取得資料物件中的屬性值，並將數字字串轉換為數字
+  var groupedData = d3.group(res, function(d) {
+    return d.category; // 根據 category 屬性將資料進行分組
+  });
 
-  // 建立 y 軸的線性比例尺，用於將資料值映射到圖表的高度範圍
-  const yScale = d3.scaleLinear()
-    .domain([0, d3.max(values)]) // 設定縮放域範圍，取最大值為上限
-    .range([chart_height, 0]); // 設定輸出範圍，即圖表的高度範圍
 
-  // 建立 x 軸的類別比例尺，用於將資料的鍵值映射到圖表的寬度範圍
-  const xScale = d3.scaleBand()
-    .domain(keys) // 設定輸入域範圍，即資料的鍵值
-    .rangeRound([0, chart_width]) // 設定輸出範圍，即圖表的寬度範圍
-    .padding(0.1); // 設定間距，即每個長條之間的間隔
+  var root = d3.hierarchy(groupedData).sum(function(d){return d.value});
+// 創建層次結構的根節點，使用 d3.hierarchy() 方法將分組後的資料轉換為層次結構的節點
+// 使用 sum() 方法將每個節點的值設置為其子節點值的總和
 
-  // 創建長條元素，代表每個資料點的長條
-  const bars = svg.selectAll('.bar')
-    .data(values) // 綁定資料
-    .enter() // 進入選擇集
-    .append('rect') // 創建 rect 元素
-    .attr('class', 'bar') // 設定長條的 class
-    .attr('x', (d, i) => xScale(keys[i])) // 設定長條的 x 座標，根據索引 i 取得對應的鍵值
-    .attr('y', d => yScale(d)) // 設定長條的 y 座標，根據資料值取得對應的高度
-    .attr('width', xScale.bandwidth()) // 設定長條的寬度
-    .attr('height', d => chart_height - yScale(d)) // 設定長條的高度
-    .style('fill', 'blue'); // 設定長條的填充顏色為藍色
+var tiles = root.leaves();
+// 獲取層次結構中的葉子節點，也就是最底層的節點
 
-  // 創建圖表標題
-  const header = svg.append('g').attr('class', 'bar-header')
-    .attr('transform', `translate(${+chart_margin.top / 2},${-chart_margin.right / 2})`).append('text');
-  header.append('tspan').text('營業銷貨收入(億)').style('font-size', '2em');
+var treemap = d3.treemap()
+  .size([width - chart_margin.left - chart_margin.right, height - chart_margin.top - chart_margin.bottom])
+  .paddingInner(1).paddingTop(1).paddingRight(1).paddingBottom(1).paddingLeft(1).round(true).padding(2);
+// 創建 treemap 函式，設定大小、內部間距和圓角等屬性
 
-  // 創建 x 軸
-  const xAxis = d3.axisBottom(xScale)
-    .tickSizeInner(-chart_height) // 設定內部刻度線的長度
-    .tickSizeOuter(0) // 設定外部刻度線的長度
-    .tickSize(0); // 設定刻度線的長度為0，即不顯示刻度線
-  const xAxisDraw = svg.append('g')
-    .attr('transform', `translate(0, ${chart_height})`) // 將 x 軸向下平移至圖表底部
-    .attr('class', 'xaxis')
-    .call(xAxis); // 呼叫 x 軸生成器
+var nodes = treemap(root
+              .sum(function(d) { return d.value; })
+              .sort(function(a, b) { return b.height - a.height || b.value - a.value; }))
+              .descendants();
+// 使用 treemap 函式對根節點進行布局，計算每個節點的位置和大小
+// 使用 sum() 方法重新計算每個節點的值，sort() 方法對節點進行排序，以便更好地展示
 
-  // 創建 y 軸
-  const yAxis = d3.axisLeft(yScale)
-    .tickSizeInner(-chart_width) // 設定內部刻度線的長度
-    .tickFormat((y) => (y * 10).toFixed()); // 設定刻度標籤的格式，將數字乘以100並取到小數點後的兩位
-  const yAxisDraw = svg.append('g')
-    .attr('class', 'yaxis')
-    .call(yAxis); // 呼叫 y 軸生成器
+const canvas = svg.selectAll('.g')
+                  .data(tiles)
+                  .enter()
+                  .append('g')
+                  .attr('transform',(d)=>
+                  {
+                    return 'translate('+d['x0']+','+d['y0']+')'
+                  });
+// 在 SVG 中創建一個 g 元素群組，用於放置矩形區塊
+// 根據每個節點的位置和大小，將 g 元素進行平移，以適應其在 SVG 中的位置
 
-  yAxisDraw.selectAll('text').attr('dx', '-0.6em'); // 調整 y 軸刻度標籤的位置
+canvas.append('rect')
+      .attr('class','tiles')
+      .attr('fill',(d)=>{
+        var cat = d.data['category'];
+        if (cat === 'h'){
+          return 'orange';
+        }
+        else if(cat === 'a'){
+          return 'blue';
+        }
+        else{
+          return 'yellow';
+        }
+      })
+      .attr('name',(d)=>{
+        return d['name'];
+      })
+      .attr('category',(d)=>{
+        return d['category'];
+      })
+      .attr('value',(d)=>{
+        return d['value'];
+      })
+      .attr('width',(d)=>{
+        return d['x1']-d['x0'];
+      })
+      .attr('height',(d)=>{
+        return d['y1']-d['y0'];
+      });
+// 在 g 元素中創建矩形元素，設定相應的屬性
+// 根據每個節點的分類，設定矩形的填充顏色
+// 將節點的名稱、分類和值等資訊作為屬性存儲在矩形元素中
+// 根據節點的位置和大小，設定矩形的寬度和高度
+
+
+
+canvas.append('text')
+.text((d)=>{
+  return d.data['name'];
+})
+.attr('x',5).attr('y',10);
+// 在每個矩形區塊上方添加文字，顯示節點的名稱
+// 設定文字的位置(x, y)
+
+canvas.append('text')
+.text((d)=>{
+  return d.data['value'];
+})
+.attr('x',5)
+.attr('y',25);
+// 在每個矩形區塊上方添加文字，顯示節點的值
+// 設定文字的位置(x, y)
+
+const legendData = [
+{ category: 'h', color: 'orange' },
+{ category: 'a', color: 'blue' },
+{ category: 'other', color: 'yellow' }
+];
+// 定義圖例的資料，包括分類和顏色
+
+const legendWidth = 120;
+const legendHeight = 20;
+const legendMargin = 10;
+// 設定圖例的寬度、高度和間距
+
+const legend = svg.append('g')
+.attr('class', 'legend')
+.attr('transform', `translate(${width/2 - (legendData.length * (legendWidth + legendMargin))}, ${-chart_margin.top/3})`);
+// 在 SVG 中創建一個 g 元素群組，用於放置圖例
+// 設定圖例的位置，根據畫布的寬度和圖例的寬度、數量計算得出
+
+const legendItems = legend.selectAll('.legend-item')
+.data(legendData)
+.enter()
+.append('g')
+.attr('class', 'legend-item')
+.attr('transform', (d, i) => `translate(${i * (legendWidth + legendMargin)}, 0)`);
+// 在圖例中創建一個 g 元素群組，用於放置每個圖例項目
+// 根據圖例的數量，設定圖例項目的位置，根據圖例的寬度和間距計算得出
+
+legendItems.append('rect')
+.attr('x', 0)
+.attr('y', 0)
+.attr('width', legendWidth)
+.attr('height', legendHeight)
+.attr('fill', d => d.color);
+// 在圖例項目中創建矩形元素，設定相應的屬性
+// 根據圖例資料的顏色屬性，設定矩形的填充顏色
+
+legendItems.append('text')
+.attr('x', legendWidth / 2)
+.attr('y', -5)
+.attr('text-anchor', 'middle')
+.text(d => `Category ${d.category}`);
+// 在圖例項目中添加文字，顯示分類的名稱
+// 設定文字的位置(x, y)，以及對齊方式和文字內容
+
+svg.append('text')
+.attr('class', 'chart-title')
+.attr('x', chart_width / 2)
+.attr('y', -chart_margin.top / 1.7)
+.attr('text-anchor', 'middle')
+.attr('font-size', '20px')
+.text('Treemap Chart');
+// 在 SVG 中添加一個文字元素，用於標題
+// 設定文字的位置(x, y)，對齊方式，字體大小和文字內容
 }
 
-
-
-
-// 以下為錯誤之程式碼尚待釐清
-// function setupcanvas(bar){
-//   const data = [bar.y108,bar.y109,bar.y110]
-//   const key = Object.keys(bar)
-//   const width = 400;
-//   const height = 500;
-//   const chart_margin = {top:80,right:40,bottom:40,left:80};
-//   const chart_width = width - (chart_margin.left+chart_margin.right);
-//   const chart_height = height - (chart_margin.top+chart_margin.bottom);
   
-//   const this_svg = d3.select('.bar-chart-container').append('svg')
-//   .attr('width', width).attr('height',height)
-//   .append('g')
-//   .attr('transform',`translate(${chart_margin.left},${chart_margin.top})`);
-  
-//   const ymax = d3.max([bar.y108, bar.y109, bar.y110]);
-//   const yscale_v3 = d3.scaleLinear()
-//   .domain([0, ymax])
-//   .range([chart_height, 0]);
 
-//   const xScale = d3.scaleBand()
-//   .domain(keys)
-//   .rangeRound([0, chart_width])
-//   .paddingInner(0.25);
 
-//   const bars = this_svg.selectAll('.bar')
-//           .data(bar)
-//           .enter()
-//           .append('rect')
-//           .attr('class', 'bar')
-//           .attr('y', 0)
-//           .attr('x', d => xScale(key)) // 使用 xScale 函式
-//           .attr('width', x => yscale_v3(data)) // 使用 yscale_v3 函式
-//           .attr('height', xScale.bandwidth())
-//           .style('fill', 'blue'); // 正確的 fill 屬性寫
-// }
+
+
+
+ 
+

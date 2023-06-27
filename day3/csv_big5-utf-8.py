@@ -9,7 +9,7 @@ def convert_big5_to_utf8(input_csv, output_csv):
             for row in reader:
                 writer.writerow(row)
 
-input_csv = '台積電.csv'
+input_csv = 'example.csv'
 output_csv = 'test.csv'
 
 convert_big5_to_utf8(input_csv, output_csv)
