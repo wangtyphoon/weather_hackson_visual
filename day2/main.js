@@ -59,6 +59,7 @@ function setupcanvas(data) {
     .attr('width', xScale.bandwidth()) // 設定長條的寬度
     .attr('height', d => chart_height - yScale(d)) // 設定長條的高度
     .style('fill', 'blue'); // 設定長條的填充顏色為藍色
+    
 
   // 創建圖表標題
   const header = svg.append('g').attr('class', 'bar-header')

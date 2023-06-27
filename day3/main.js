@@ -24,7 +24,7 @@ function treemap(res) {
   const chart_width = width - (chart_margin.left + chart_margin.right); // 計算圖表的寬度，即畫布寬度減去左右邊距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 計算圖表的高度，即畫布高度減去上下邊距
 
-  const svg = d3.select('.bar-chart-container')
+  const svg = d3.selectAll('.bar-chart-container')
     .append('svg') // 創建 svg 元素
     .attr('width', width) // 設定 svg 元素的寬度
     .attr('height', height) // 設定 svg 元素的高度
@@ -32,7 +32,8 @@ function treemap(res) {
     .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
     .attr("font-family", "sans-serif")
     .attr("font-size", 12)
-    .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`); // 設定 g 元素的平移位置，以適應圖表邊距
+    .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`)
+    ; // 設定 g 元素的平移位置，以適應圖表邊距
 
   var groupedData = d3.group(res, function(d) {
     return d.category; // 根據 category 屬性將資料進行分組
@@ -48,7 +49,7 @@ var tiles = root.leaves();
 
 var treemap = d3.treemap()
   .size([width - chart_margin.left - chart_margin.right, height - chart_margin.top - chart_margin.bottom])
-  .paddingInner(1).paddingTop(1).paddingRight(1).paddingBottom(1).paddingLeft(1).round(true).padding(2);
+  .paddingInner(1).paddingTop(10).paddingRight(1).paddingBottom(1).paddingLeft(1).round(true).padding(3);
 // 創建 treemap 函式，設定大小、內部間距和圓角等屬性
 
 var nodes = treemap(root
@@ -68,6 +69,21 @@ const canvas = svg.selectAll('.g')
                   });
 // 在 SVG 中創建一個 g 元素群組，用於放置矩形區塊
 // 根據每個節點的位置和大小，將 g 元素進行平移，以適應其在 SVG 中的位置
+// 提取tiles陣列中每個元素的value值，並存儲在values陣列中
+var values = tiles.map(d => d.value);
+
+// 使用d3.extent()方法計算values陣列中的最大值和最小值
+var extent = d3.extent(values);
+
+// 從extent陣列中取得最小值和最大值
+var minValue = extent[0];
+var maxValue = extent[1];
+
+// 創建一個線性比例尺，用於將value值映射到不透明度的範圍
+var opacity = d3.scaleLinear()
+    .domain([minValue, maxValue]) // 指定比例尺的範圍
+    .range([.5,1]); // 指定對應的不透明度範圍
+
 
 canvas.append('rect')
       .attr('class','tiles')
@@ -97,6 +113,21 @@ canvas.append('rect')
       })
       .attr('height',(d)=>{
         return d['y1']-d['y0'];
+      })
+      .attr("opacity",function(d){ return opacity(d.data['value'])}) //矩形透明度
+      .attr("stroke", "black")
+      .attr("stroke-width", 1) //矩形邊框
+      .on("mouseover", function() {
+        d3.select(this)
+          .transition()
+          .duration(200) // 動畫持續時間
+          .attr("transform", "scale(1.2)"); // 放大矩形
+      })
+      .on("mouseout", function() {
+        d3.select(this)
+          .transition()
+          .duration(200) // 動畫持續時間
+          .attr("transform", "scale(1)"); // 還原矩形大小
       });
 // 在 g 元素中創建矩形元素，設定相應的屬性
 // 根據每個節點的分類，設定矩形的填充顏色
@@ -109,7 +140,7 @@ canvas.append('text')
 .text((d)=>{
   return d.data['name'];
 })
-.attr('x',5).attr('y',10);
+.attr('x',5).attr('y',12);
 // 在每個矩形區塊上方添加文字，顯示節點的名稱
 // 設定文字的位置(x, y)
 
