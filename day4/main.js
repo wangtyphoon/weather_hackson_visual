@@ -1,3 +1,5 @@
+import click from './select.js';
+
 const parseNA = string => (string === 'NA' ? undefined : string);
 
 // 定義一個函式 nan，將傳入的物件 d 中的特定屬性值進行 parseNA 轉換
@@ -18,12 +20,12 @@ d3.csv('example.csv', nan).then(res => {
 });
 d3.select('#dropdown').on('change', click);
 
-function click() {
-  var selectedOptvalue = this.value;
-  var selectedOptgroup = d3.select('#dropdown option:checked').node().parentNode.label;
-  var category = selectedOptgroup + selectedOptvalue;
-  console.log(category);
-}
+// function click() {
+//   var selectedOptvalue = this.value;
+//   var selectedOptgroup = d3.select('#dropdown option:checked').node().parentNode.label;
+//   var category = selectedOptgroup +'_'+ selectedOptvalue;
+//   console.log(category);
+// }
 
 
 

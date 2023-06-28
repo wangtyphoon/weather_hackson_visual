@@ -11,7 +11,7 @@ body {
     color: red;
 }
 
-#dropdown option[value="profit"] {
+#dropdown option[value="net_income"] {
     color: blue;
 }
 
