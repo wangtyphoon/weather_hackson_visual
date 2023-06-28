@@ -4,7 +4,10 @@ const dropdownData = [
   { label: '2021', options: ['營收', '淨利', '資本支出'] }
 ];
 
-const dropdown = d3.select('#dropdown');
+const dropdown = d3.select('#dropdown')
+  .style('position', 'fixed')
+  .style('top', '40px')
+  .style('left', '40px');
 
 dropdownData.forEach(group => {
   const optgroup = dropdown.append('optgroup').attr('label', group.label);
@@ -67,12 +70,12 @@ function setuptreemap(data){
 
 
 function draw(res) {
-  const width = 800; // 設定畫布的寬度為 800 像素
-  const height = 600; // 設定畫布的高度為 600 像素
-  const chart_margin = { top: 80, right: 40, bottom: 40, left: 80 }; // 設定圖表的邊距，包含上、右、下、左四個方向的邊距值
+  const width = 900; // 設定畫布的寬度為 800 像素
+  const height = 700; // 設定畫布的高度為 600 像素
+  const chart_margin = { top: 100, right: 50, bottom: 50, left: 100 }; // 設定圖表的邊距，包含上、右、下、左四個方向的邊距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 計算圖表的寬度，即畫布寬度減去左右邊距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 計算圖表的高度，即畫布高度減去上下邊距
-
+  
   const svg = d3.selectAll('.bar-chart-container')
     .append('svg') // 創建 svg 元素
     .attr('width', width) // 設定 svg 元素的寬度
@@ -88,7 +91,8 @@ function draw(res) {
     return res.行業; // 根據 category 屬性將資料進行分組
   });
 
-
+  const defaultDelay=1000
+  const transitionDelay=d3.transition().duration(defaultDelay)
   var root = d3.hierarchy(groupedData).sum(function(d){return d.value});
 // 創建層次結構的根節點，使用 d3.hierarchy() 方法將分組後的資料轉換為層次結構的節點
 // 使用 sum() 方法將每個節點的值設置為其子節點值的總和
@@ -108,13 +112,13 @@ function draw(res) {
 // // 使用 sum() 方法重新計算每個節點的值，sort() 方法對節點進行排序，以便更好地展示
 
   const canvas = svg.selectAll('.g')
-                    .data(tiles)
-                    .enter()
-                    .append('g')
-                    .attr('transform',(d)=>
-                    {
-                      return 'translate('+d['x0']+','+d['y0']+')'
-                    });
+                      .data(tiles)
+                      .enter()
+                      .append('g')
+                      .attr('transform',(d)=>
+                      {
+                        return 'translate('+d['x0']+','+d['y0']+')'
+                      });
 // // 在 SVG 中創建一個 g 元素群組，用於放置矩形區塊
 // // 根據每個節點的位置和大小，將 g 元素進行平移，以適應其在 SVG 中的位置
 // // 提取tiles陣列中每個元素的value值，並存儲在values陣列中
@@ -132,7 +136,71 @@ function draw(res) {
       .domain([minValue, maxValue]) // 指定比例尺的範圍
       .range([.5,1]); // 指定對應的不透明度範圍
 
+  // canvas.data(tiles, d=>d.title).join(
+  //   enter => {
+  //   enter.append('g').append('rect').attr('transform',(d)=>
+  //   {
+  //     return 'translate('+d['x0']+','+d['y0']+')'
+  //   })
+  //   .attr('class','tiles')
+  //   .attr('fill',(d)=>{
+  //     var cat = d.data['行業'];
+  //     // console.log(cat)
+  //     if (cat === 'computer and peripheral equipment'){
+  //       return 'orange';
+  //     }
+  //     else if(cat === 'plastics'){
+  //       return 'blue';
+  //     }
+  //     else if(cat === 'rubber'){
+  //       return 'red';
+  //     }
+  //     else if(cat === 'other electronics'){
+  //       return 'yellow';
+  //     }
+  //   })
+  //   .attr('name',(d)=>{
+  //     return d['公司'];
+  //   })
+  //   .attr('category',(d)=>{
+  //     return d['行業'];
+  //   })
+  //   .attr('value',(d)=>{
+  //     return d['value'];
+  //   })
+  //   .attr('width',(d)=>{
+  //     return d['x1']-d['x0'];
+  //   })
+  //   .attr('height',(d)=>{
+  //     return d['y1']-d['y0'];
+  //   })
+  //   .attr("opacity",function(d){ return opacity(d.data['value'])}) //矩形透明度
+  //   .attr("stroke", "black")
+  //   .attr("stroke-width", 1) //矩形邊框
+  //   .on("mouseover", function() {
+  //     d3.select(this)
+  //       .transition()
+  //       .duration(200) // 動畫持續時間
+  //       .attr("transform", "scale(1.2)"); // 放大矩形
+  //   })
+  //   .on("mouseout", function() {
+  //     d3.select(this)
+  //       .transition()
+  //       .duration(200) // 動畫持續時間
+  //       .attr("transform", "scale(1)"); // 還原矩形大小
+  //   })
 
+  //   },
+  //   update => {
+  //     update.transition(transitionDelay)
+  //     .attr('transform', (d) => `translate(${d.x0},${d.y0})`)
+  //     .attr('width', (d) => d['x1'] - d['x0'])
+  //     .attr('height', (d) => d['y1'] - d['y0']);
+  //   },
+  //   exit =>{
+  //      exit.remove();
+  //   }
+  // )                  
   canvas.append('rect')
         .attr('class','tiles')
         .attr('fill',(d)=>{
@@ -181,6 +249,7 @@ function draw(res) {
             .duration(200) // 動畫持續時間
             .attr("transform", "scale(1)"); // 還原矩形大小
         });
+  canvas.exit();
 // // 在 g 元素中創建矩形元素，設定相應的屬性
 // // 根據每個節點的分類，設定矩形的填充顏色
 // // 將節點的名稱、分類和值等資訊作為屬性存儲在矩形元素中
