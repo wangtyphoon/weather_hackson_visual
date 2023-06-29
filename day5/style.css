@@ -1,0 +1,20 @@
+body {
+    font-weight: bold;
+    margin: 2rem;
+}
+
+.bar-chart-container {
+    border: 1px solid #ccc;
+}
+
+#dropdown option[value="revenue"] {
+    color: red;
+}
+
+#dropdown option[value="net_income"] {
+    color: blue;
+}
+
+#dropdown option[value="capital-expenditure"] {
+    color: green;
+}
