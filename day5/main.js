@@ -53,13 +53,14 @@ d3.csv('example.csv',nan).then(res => {
 
 function setuptreemap(data) {
   let res = data;
-
+  let result = update(data, '2020營收'); //預設資料
+  draw(result, '2020 五十大 營收(萬)') //預設繪圖
   // 點擊事件的回呼函式
   function click() {
     let selectedOptvalue = this.value; // 獲取下拉選單中被選中的值
     let selectedOptgroup = d3.select('#dropdown option:checked').node().parentNode.label; // 獲取下拉選單中被選中的群組標籤
     let category = selectedOptgroup + selectedOptvalue; // 將群組標籤和值組合成類別
-    let title = selectedOptgroup + " 五十大企業 " + selectedOptvalue; // 生成標題文字
+    let title = selectedOptgroup + " 五十大 " + selectedOptvalue+"(萬)"; // 生成標題文字
     let result = update(res, category); // 更新資料
     draw(result, title); // 繪製圖表
   }
@@ -69,7 +70,7 @@ function setuptreemap(data) {
     let result = data.map(item => ({
       '行業': item['行業'],
       '公司': item['公司'],
-      'value': Math.abs(Number(item[keywords].replace(/,/g, ''))) // 將特定屬性值進行數值處理
+      'value': Math.round(Math.abs(Number(item[keywords].replace(/,/g, '')))/10000)// 將特定屬性值進行數值處理
     }));
 
     return result;
@@ -195,6 +196,7 @@ function draw(res, keywords) {
             .attr("transform", "scale(1.2)"); // 放大矩形
         })
         .on("mouseout", function() {
+          // console.log(this)
           d3.select(this)
             .transition()
             .duration(200) // 動畫持續時間
@@ -210,9 +212,23 @@ canvas.append('text')
   .text((d) => {
     return d.data['value'];
   })
-  .attr('x', 5)
-  .attr('y', 10);
+  .attr('x', (d) => {
+    return (d.x1-d.x0)/2;
+  })
+  .attr('y', 10)
+  .style('text-anchor', 'middle') // 水平居中
+  .style('dominant-baseline', 'middle'); // 垂直居中;
 
+  canvas.append('text')
+  .text((d) => {
+    return d.data['公司'];
+  })
+  .attr('x', (d) => {
+    return (d.x1-d.x0)/2;
+  })
+  .attr('y', 20)
+  .style('text-anchor', 'middle') // 水平居中
+  .style('dominant-baseline', 'middle'); // 垂直居中;
 // 篩選出深度為 1 的節點作為圖例的數據
 let parentNodes = root.descendants().filter(function(d) { return d.depth === 1; });
 
@@ -253,7 +269,6 @@ svg.append('text')
   .attr('text-anchor', 'middle') // 設定文字水平對齊方式為中間
   .attr('font-size', '30px')
   .text(keywords); // 使用傳入的 keywords 參數作為標題文字
-
 }
 
 
