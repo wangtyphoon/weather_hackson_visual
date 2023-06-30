@@ -93,7 +93,7 @@ function setupcanvas(data) {
 // 以下為錯誤之程式碼尚待釐清
 // function setupcanvas(bar){
 //   const data = [bar.y108,bar.y109,bar.y110]
-//   const key = Object.keys(bar)
+//   const keys = Object.keys(bar)
 //   const width = 400;
 //   const height = 500;
 //   const chart_margin = {top:80,right:40,bottom:40,left:80};
@@ -121,7 +121,7 @@ function setupcanvas(data) {
 //           .append('rect')
 //           .attr('class', 'bar')
 //           .attr('y', 0)
-//           .attr('x', d => xScale(key)) // 使用 xScale 函式
+//           .attr('x', d => xScale(keys)) // 使用 xScale 函式
 //           .attr('width', x => yscale_v3(data)) // 使用 yscale_v3 函式
 //           .attr('height', xScale.bandwidth())
 //           .style('fill', 'blue'); // 正確的 fill 屬性寫
