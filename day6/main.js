@@ -130,7 +130,7 @@ function draw(res, keywords) {
   var tiles = root.leaves();
 // // 獲取層次結構中的葉子節點，也就是最底層的節點
   var treemap = d3.treemap()
-    .size([width - chart_margin.left - chart_margin.right, height - chart_margin.top - chart_margin.bottom])
+    .size([chart_width, chart_height])
     .paddingInner(3).paddingTop(15).paddingRight(3).paddingBottom(3).paddingLeft(3).round(true);
 // // 創建 treemap 函式，設定大小、內部間距和圓角等屬性
 
