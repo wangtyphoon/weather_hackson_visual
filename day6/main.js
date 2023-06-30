@@ -1,6 +1,21 @@
-// import click from './select.js';  引用別的js目前無用
+import barpage from './stackbar.js';  
 // 定義下拉菜單的數據
-function homepage(){
+export default function homepage(){
+  killall()
+  // 創建 tree-chart-container 元素
+  var barChartContainer = d3.select("body")
+  .append("div")
+  .attr("class", "tree-chart-container");
+
+  // 創建 controls 元素
+  var controlsContainer = d3.select("body")
+  .append("div")
+  .attr("class", "controls");
+
+  // 創建 select 元素
+  var selectElement = controlsContainer.append("select")
+  .attr("id", "dropdown");
+
   const dropdownData = [
     { label: '2020', options: ['營收', '淨利', '資本支出'] },
     { label: '2021', options: ['營收', '淨利', '資本支出'] }
@@ -9,6 +24,7 @@ function homepage(){
   // 選擇下拉菜單的容器元素，並設置樣式
   const dropdown = d3.select('#dropdown')
     .style('position', 'fixed')
+    .style('font-size',"16px")
     .style('top', '40px')
     .style('left', '40px');
   
@@ -40,14 +56,13 @@ function homepage(){
 
   // 使用 d3.csv() 方法從 'example.csv' 讀取資料，並在讀取完成後執行指定的回呼函式
   d3.csv('example.csv',nan).then(res => {
-    console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
+    // console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
     setuptreemap(res)
 
   // 印出轉換後的結果
 });
 
 }
-homepage()///呼叫此頁面
 
 function setuptreemap(data) {
   let res = data;
@@ -79,9 +94,9 @@ function setuptreemap(data) {
 }
 
 
-
+//畫樹圖
 function draw(res, keywords) {
-  d3.selectAll('.bar-chart-container svg').remove(); // 移除所有具有 'bar-chart-container' 類別的元素中的 SVG 元素
+  d3.selectAll('.tree-chart-container svg').remove(); // 移除所有具有 'tree-chart-container' 類別的元素中的 SVG 元素
 
 
 
@@ -91,7 +106,7 @@ function draw(res, keywords) {
   const chart_width = width - (chart_margin.left + chart_margin.right); // 計算圖表的寬度，即畫布寬度減去左右邊距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 計算圖表的高度，即畫布高度減去上下邊距
   
-  const svg = d3.selectAll('.bar-chart-container')
+  const svg = d3.selectAll('.tree-chart-container')
     .append('svg') // 創建 svg 元素
     .attr('width', width) // 設定 svg 元素的寬度
     .attr('height', height) // 設定 svg 元素的高度
@@ -153,7 +168,9 @@ function draw(res, keywords) {
   
   var lastClickTime = 0;
   var delay = 300; // 设置双击间隔时间，单位为毫秒
-
+  
+  let parentNodes = root.descendants().filter(function(d) { return d.depth === 1; });//treemap 母類別名稱
+                      
   canvas.append('rect')
         .attr('class','tiles')
         .attr('fill',(d)=>{
@@ -176,7 +193,7 @@ function draw(res, keywords) {
           return d['公司'];
         })
         .attr('category',(d)=>{
-          return d['行業'];
+          return d.data['行業'];
         })
         .attr('value',(d)=>{
           return d['value'];
@@ -197,10 +214,12 @@ function draw(res, keywords) {
             .attr("transform", "scale(1.2)"); // 放大矩形
         })
         .on("dblclick",function(){
-          var currentTime = new Date().getTime();
+          let currentTime = new Date().getTime();
           if (currentTime - lastClickTime > delay) {
             killall()
             lastClickTime = currentTime;
+            let specificIndustry = this.getAttribute('category') // 獲得類別參數以傳送給barpage
+            barpage(specificIndustry)
           }
         })
         .on("mouseout", function() {
@@ -238,7 +257,6 @@ canvas.append('text')
   .style('text-anchor', 'middle') // 水平居中
   .style('dominant-baseline', 'middle'); // 垂直居中;
 // 篩選出深度為 1 的節點作為圖例的數據
-let parentNodes = root.descendants().filter(function(d) { return d.depth === 1; });
 
 // 在 svg 中添加圖例群組元素
 const legend = svg.append('g')
@@ -279,12 +297,10 @@ svg.append('text')
   .text(keywords); // 使用傳入的 keywords 參數作為標題文字
 }
 
-
-
-
-
- 
+//////移除所有元素
 function killall(){
-  d3.selectAll('.bar-chart-container svg').remove(); // 移除所有具有 'bar-chart-container' 類別的元素中的 SVG 元素
+  d3.selectAll('.tree-chart-container').remove(); // 移除所有具有 'tree-chart-container' 類別的元素中的 SVG 元素
   d3.selectAll('#dropdown').remove();//移除下拉式選單
 }
+
+homepage()///呼叫此頁面
