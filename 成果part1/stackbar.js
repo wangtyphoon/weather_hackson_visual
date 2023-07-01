@@ -148,16 +148,22 @@ function draw_stackbar(res, title) {
 
   // 创建堆叠条形图
   svg.selectAll("g")
-    .data(series) // 绑定堆叠数据
-    .join("g") // 创建 g 元素用于放置每组堆叠条形图
-    .attr("fill", d => colorScale(d.key)) // 设置堆叠条形图的填充颜色
-    .selectAll("rect")
-    .data(d => d) // 绑定每组数据
-    .join("rect") // 创建矩形元素用于绘制每个堆叠条形图
-    .attr("x", d => xScale(d.data.公司)) // 设置矩形的 x 坐标，对应公司名称
-    .attr("y", d => yScale(d[1])) // 设置矩形的 y 坐标，对应堆叠的顶部
-    .attr("height", d => yScale(d[0]) - yScale(d[1])) // 设置矩形的高度，根据堆叠的高度差计算得出
-    .attr("width", xScale.bandwidth()); // 设置矩形的宽度，根据比例尺的间隔比例计算得出
+  .data(series) // 绑定堆叠数据
+  .join("g") // 创建 g 元素用于放置每组堆叠条形图
+  .attr("fill", d => colorScale(d.key)) // 设置堆叠条形图的填充颜色
+  .selectAll("rect")
+  .data(d => d) // 绑定每组数据
+  .join("rect") // 创建矩形元素用于绘制每个堆叠条形图
+  .attr("x", d => xScale(d.data.公司)) // 设置矩形的 x 坐标，对应公司名称
+  .attr("y", yScale(0)) // 设置初始的 y 坐标为底部
+  .attr("height", 0) // 设置初始高度为0
+  .attr("width", xScale.bandwidth()) // 设置矩形的宽度，根据比例尺的间隔比例计算得出
+  .transition() // 添加过渡效果
+  .duration(1000) // 过渡的持续时间
+  .delay((d, i) => i * 100) // 每个矩形的延迟时间，实现逐个绘制的效果
+  .attr("y", d => yScale(d[1])) // 设置矩形的目标 y 坐标，对应堆叠的顶部
+  .attr("height", d => yScale(d[0]) - yScale(d[1])); // 设置矩形的目标高度，根据堆叠的高度差计算得出
+
 
   const header = svg.append('g').attr('class', 'bar-header')
     .attr('transform', `translate(${+chart_margin.right / 2},${-chart_margin.top / 2})`).append('text');
