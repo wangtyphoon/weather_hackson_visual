@@ -70,7 +70,9 @@ function setupstackbarmap(data, specificIndustry) {
   let res = data; // 保存原始数据
 
   // 预设数据
-  let result = update(data, '2020', specificIndustry);
+  let result2020 = update(res, 2020, specificIndustry); // 更新数据
+  let result2021 = update(res, 2021, specificIndustry); // 更新数据
+  let result = result2020.concat(result2021)
 
   // 生成标题文字
   let title = 'computer and peripheral equipment' + " 基本資料(萬)";
@@ -82,7 +84,10 @@ function setupstackbarmap(data, specificIndustry) {
   function click() {
     let year = this.value; // 获取下拉菜单中被选中的值
     let title = specificIndustry + " 基本資料(萬)"; // 生成标题文字
-    let result = update(res, year, specificIndustry); // 更新数据
+    let result2020 = update(res, 2020, specificIndustry); // 更新数据
+    let result2021 = update(res, 2021, specificIndustry); // 更新数据
+    let result = result2020.concat(result2021)
+    console.log(result)
     draw_stackbar(result, title); // 绘制图表
   }
 
@@ -92,6 +97,7 @@ function setupstackbarmap(data, specificIndustry) {
       .map(item => ({
         //'行業': item['行業'],
         '公司': item['公司'],
+        '年分': year,
         '營收': Math.round(Math.abs(Number(item[year + '營收'].replace(/,/g, ''))) / 10000), // 将特定属性值进行数值处理
         '淨利': Math.round(Math.abs(Number(item[year + '淨利'].replace(/,/g, ''))) / 10000),
         '資本支出': Math.round(Math.abs(Number(item[year + '資本支出'].replace(/,/g, ''))) / 10000)
@@ -107,7 +113,7 @@ function setupstackbarmap(data, specificIndustry) {
 function draw_stackbar(res, title) {
   d3.selectAll('.stackbar-chart-container svg').remove(); // 清除旧图
 
-  const width = 1920; // 设置画布宽度为 1000 像素
+  const width = 1280; // 设置画布宽度为 1000 像素
   const height = 840; // 设置画布高度为 600 像素
   const chart_margin = { top: 80, right: 80, bottom: 80, left: 80 }; // 设置图表的边距，包含上、右、下、左四个方向的边距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 计算图表的宽度，即画布宽度减去左右边距
@@ -135,6 +141,12 @@ function draw_stackbar(res, title) {
     .range([0, chart_width - 80]) // 设置 X 轴的位置范围
     .padding(0.2); // 设置 X 轴的间隔比例
 
+  const xSubgroup = d3.scaleBand()
+    .domain(res.map(d => d.年分))
+    .range([0, xScale .bandwidth()])
+    .padding([0.1])
+
+
   // Y 轴比例尺
   const yScale = d3.scaleLinear()
     .domain([0, d3.max(series, d => d3.max(d, d => +d[1]))]) // 设置 Y 轴的刻度范围，从0到数据中最大值
@@ -146,24 +158,39 @@ function draw_stackbar(res, title) {
     .range(["#FFC107", "#FF5722", "#3F51B5"]); // 设置颜色比例尺的输出范围，对应每个数据类别的颜色
 
   // 创建堆叠条形图
-  svg.selectAll("g")
+  const canvas = svg.selectAll("g")
   .data(series) // 绑定堆叠数据
   .join("g") // 创建 g 元素用于放置每组堆叠条形图
-  .attr("fill", d => colorScale(d.key)) // 设置堆叠条形图的填充颜色
-  .selectAll("rect")
+  .attr("fill", d => colorScale(d.key)); // 设置堆叠条形图的填充颜色
+
+  canvas.selectAll("rect")
   .data(d => d) // 绑定每组数据
   .join("rect") // 创建矩形元素用于绘制每个堆叠条形图
-  .attr("x", d => xScale(d.data.公司)) // 设置矩形的 x 坐标，对应公司名称
+  .attr("x", d => xScale(d.data.公司)+xSubgroup(d.data.年分)) // 设置矩形的 x 坐标，对应公司名称
   .attr("y", yScale(0)) // 设置初始的 y 坐标为底部
   .attr("height", 0) // 设置初始高度为0
-  .attr("width", xScale.bandwidth()) // 设置矩形的宽度，根据比例尺的间隔比例计算得出
+  .attr("width", xSubgroup.bandwidth()) // 设置矩形的宽度，根据比例尺的间隔比例计算得出
   .transition() // 添加过渡效果
   .duration(1000) // 过渡的持续时间
   .delay((d, i) => i * 100) // 每个矩形的延迟时间，实现逐个绘制的效果
   .attr("y", d => yScale(d[1])) // 设置矩形的目标 y 坐标，对应堆叠的顶部
   .attr("height", d => yScale(d[0]) - yScale(d[1])); // 设置矩形的目标高度，根据堆叠的高度差计算得出
 
+  canvas.selectAll("text")
+  .data(d => d.filter(item => item[0] === 0)) // 绑定满足条件的数据
+  .join("text") // 创建文本元素
+  .text(d => {
+    console.log(d); // 在控制台输出 d 的内容
+    return d.data.年分; // 设置文本内容
+  })
+  .attr('x', d => xScale(d.data.公司) + xSubgroup(d.data.年分) + xSubgroup.bandwidth() / 2) // 设置文本的 x 坐标在矩形的中间位置
+  .attr('y', d => yScale(d[0]) + 10) // 设置文本的 y 坐标在矩形顶部上方一定距离处
+  .attr('text-anchor', 'middle') // 设置文本的水平对齐方式为居中对齐
+  .attr('dominant-baseline', 'baseline') // 设置文本的垂直对齐方式为基线对齐
+  .style('font-size', '12px') // 设置文本的字体大小
+  .style('fill', 'black'); // 设置文本的颜色为黑色
 
+  
   const header = svg.append('g').attr('class', 'bar-header')
     .attr('transform', `translate(${+chart_margin.right / 2},${-chart_margin.top / 2})`).append('text');
   header.append('tspan').text(title).style('font-size', '2em'); // 添加图表标题
@@ -174,10 +201,13 @@ function draw_stackbar(res, title) {
     .tickSize(0); // 设置刻度线的长度为0，即不显示刻度线
 
   const xAxisDraw = svg.append('g')
-    .attr('transform', `translate(0, ${chart_height})`) // 将 X 轴向下平移至图表底部
+    .attr('transform', `translate(0, ${chart_height+10})`) // 将 X 轴向下平移至图表底部
     .attr('class', 'xaxis')
     .style('font-size', 16)
-    .call(xAxis); // 绘制 X 轴
+    .call(xAxis) // 绘制 X 轴
+    .select('.domain') // 选择轴线元素
+    .style('display', 'none'); // 设置轴线的显示属性为 none
+
 
   const yAxis = d3.axisLeft(yScale) // 创建 Y 轴刻度生成器
     .ticks(10)
@@ -216,7 +246,6 @@ function draw_stackbar(res, title) {
     .attr('alignment-baseline', 'middle')
     .style('font-size', '12px');
 }
-
 
 function back(){
   d3.selectAll("#bottom-button").remove() // 移除页面中所有 id 为 "bottom-button" 的元素
