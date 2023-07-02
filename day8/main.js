@@ -24,6 +24,7 @@ export default function homepage(){
   
   // 選擇下拉菜單的容器元素，並設置樣式
   const dropdown = d3.select('#dropdown')
+    .style('background-color','yellowgreen')
     .style('position', 'fixed')
     .style('font-size',"16px")
     .style('top', '40px')
@@ -32,12 +33,15 @@ export default function homepage(){
   // 遍歷下拉菜單的數據陣列
   dropdownData.forEach(group => {
     // 創建下拉菜單的選項組元素，並設置標籤屬性為當前組的標籤
-    const optgroup = dropdown.append('optgroup').attr('label', group.label);
+    const optgroup = dropdown.append('optgroup').attr('label', group.label)
+    .style('background-color','white')
     
     // 遍歷當前組的選項陣列
     group.options.forEach(option => {
       // 在選項組元素中創建選項元素，並設置值屬性和文本內容為當前選項
-      optgroup.append('option').attr('value', option).text(option);
+      optgroup.append('option').attr('value', option).text(option)
+      .style('background-color','white')
+
     });
   });
   function nan(d) {

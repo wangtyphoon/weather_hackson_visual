@@ -21,6 +21,7 @@ svg {
 
 
 #dropdown option[value="revenue"] {
+    background-color: green; 
     color: red;
 }
 
