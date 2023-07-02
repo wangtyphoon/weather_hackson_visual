@@ -87,7 +87,7 @@ function setupstackbarmap(data, specificIndustry) {
     let result2020 = update(res, 2020, specificIndustry); // 更新数据
     let result2021 = update(res, 2021, specificIndustry); // 更新数据
     let result = result2020.concat(result2021)
-    console.log(result)
+    //console.log(result)
     draw_stackbar(result, title); // 绘制图表
   }
 
@@ -113,8 +113,8 @@ function setupstackbarmap(data, specificIndustry) {
 function draw_stackbar(res, title) {
   d3.selectAll('.stackbar-chart-container svg').remove(); // 清除旧图
 
-  const width = 1280; // 设置画布宽度为 1000 像素
-  const height = 840; // 设置画布高度为 600 像素
+  const width = 1440; // 设置画布宽度为 1000 像素
+  const height = 900; // 设置画布高度为 600 像素
   const chart_margin = { top: 80, right: 80, bottom: 80, left: 80 }; // 设置图表的边距，包含上、右、下、左四个方向的边距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 计算图表的宽度，即画布宽度减去左右边距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 计算图表的高度，即画布高度减去上下边距

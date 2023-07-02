@@ -2,6 +2,7 @@ import barpage from './stackbar.js';
 // 定義下拉菜單的數據
 export default function homepage(){
   killall()
+    
   // 創建 tree-chart-container 元素
   var barChartContainer = d3.select("body")
   .append("div")
@@ -56,7 +57,7 @@ export default function homepage(){
 
   // 使用 d3.csv() 方法從 'example.csv' 讀取資料，並在讀取完成後執行指定的回呼函式
   d3.csv('example.csv',nan).then(res => {
-    // console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
+    console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
     setuptreemap(res)
 
   // 印出轉換後的結果
@@ -100,8 +101,8 @@ function draw(res, keywords) {
 
 
 
-  const width = 1200; // 設定畫布的寬度為 800 像素
-  const height = 960; // 設定畫布的高度為 600 像素
+  const width = 1440; // 設定畫布的寬度為 800 像素
+  const height = 900; // 設定畫布的高度為 600 像素
   const chart_margin = { top: 80, right: 40, bottom: 80, left: 40 }; // 設定圖表的邊距，包含上、右、下、左四個方向的邊距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 計算圖表的寬度，即畫布寬度減去左右邊距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 計算圖表的高度，即畫布高度減去上下邊距
@@ -116,11 +117,10 @@ function draw(res, keywords) {
     .attr("font-size", 12)
     .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`)
     ; // 設定 g 元素的平移位置，以適應圖表邊距
-
+ 
   let groupedData = d3.group(res, function(res) {
     return res.行業; // 根據 category 屬性將資料進行分組
   });
-
   const defaultDelay=1000
   const transitionDelay=d3.transition().duration(defaultDelay)
   var root = d3.hierarchy(groupedData).sum(function(d){return d.value});
@@ -131,7 +131,7 @@ function draw(res, keywords) {
 // // 獲取層次結構中的葉子節點，也就是最底層的節點
   var treemap = d3.treemap()
     .size([chart_width, chart_height])
-    .paddingInner(3).paddingTop(15).paddingRight(3).paddingBottom(3).paddingLeft(3).round(true);
+    .paddingInner(5).paddingTop(15).paddingRight(5).paddingBottom(5).paddingLeft(5).round(true);
 // // 創建 treemap 函式，設定大小、內部間距和圓角等屬性
 
   var nodes = treemap(root
@@ -215,7 +215,7 @@ function draw(res, keywords) {
         })
         .attr("opacity",function(d){ return opacity(d.data['value'])}) //矩形透明度
         .attr("stroke", "black")
-        .attr("stroke-width", 2) //矩形邊框
+        .attr("stroke-width", 3) //矩形邊框
         .on("mouseover", function() {
           d3.select(this)
             .transition()
