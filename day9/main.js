@@ -60,7 +60,7 @@ export default function homepage(){
 
   // 使用 d3.csv() 方法從 'example.csv' 讀取資料，並在讀取完成後執行指定的回呼函式
   d3.csv('example.csv',nan).then(res => {
-    console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
+    // console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
     setuptreemap(res)
 
   // 印出轉換後的結果
@@ -104,7 +104,7 @@ function draw(res, keywords) {
 
   // 創建 tree-chart-container 元素
 
-  const width = document.body.clientWidth*0.49; // 設定畫布的寬度為 隨body大小變化
+  const width = document.body.clientWidth*0.5; // 設定畫布的寬度為 隨body大小變化
   const height = 720; // 設定畫布的高度為  隨body大小變化
   const chart_margin = { top: 80, right: 40, bottom: 80, left: 40 }; // 設定圖表的邊距，包含上、右、下、左四個方向的邊距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 計算圖表的寬度，即畫布寬度減去左右邊距
@@ -115,7 +115,7 @@ function draw(res, keywords) {
     .attr('width', width) // 設定 svg 元素的寬度
     .attr('height', height) // 設定 svg 元素的高度
     .append('g') // 在 svg 元素中創建一個 g 元素，用於放置圖表元素
-    .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+    .attr("style", "max-width: 100%; height: auto;")
     .attr("font-family", "sans-serif")
     .attr("font-size", 12)
     .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`)
