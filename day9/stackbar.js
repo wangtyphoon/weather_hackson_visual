@@ -7,8 +7,6 @@ export default function barpage(specificIndustry) {
     .append("div") // 在 body 元素中添加一个 div 元素
     .attr("class", "bottom-container"); // 添加类名为 "bottom-container"
 
-  drawscatter();
-
   // 添加上一頁按鈕
   bottomContainer.append("button") // 在底部容器中添加一个按钮元素
     .attr("id", "bottom-button") // 设置按钮元素的 id 属性为 "bottom-button"
@@ -48,7 +46,7 @@ export default function barpage(specificIndustry) {
 
 
   // 创建堆叠条形图容器
-  var barChartContainer = d3.select("body")
+  let barChartContainer = d3.select("body")
     .append("div") // 在 body 元素中添加一个 div 元素
     .attr("class", "stackbar-chart-container"); // 添加类名为 "stackbar-chart-container"
 
@@ -87,6 +85,7 @@ export default function barpage(specificIndustry) {
   d3.csv('example-Carbon.csv', nan).then(bardata => {
     // console.log('local csv', bardata); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
     setupstackbarmap(bardata, specificIndustry); // 调用 setupstackbarmap 函数，传入读取的数据和特定行业参数
+    drawscatter(specificIndustry);
   });
 };
 
@@ -97,7 +96,6 @@ function setupstackbarmap(data, specificIndustry) {
   let result2020 = update(res, 2020, specificIndustry,target); // 更新数据
   let result2021 = update(res, 2021, specificIndustry,target); // 更新数据
   let result = result2020.concat(result2021)
-  // console.log(result)
   // 生成标题文字
   let title = specificIndustry + " "+target;
 
@@ -112,7 +110,7 @@ function setupstackbarmap(data, specificIndustry) {
     let result2021 = update(res, 2021, specificIndustry,target); // 更新数据
     let result = result2020.concat(result2021)
     draw_stackbar(result, title,target); 
-    drawscatter();// 绘制图表
+    drawscatter(specificIndustry);// 绘制图表
   }
 
   // 更新数据的函数
@@ -120,31 +118,28 @@ function setupstackbarmap(data, specificIndustry) {
     if (target == "營收"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '營收': Math.round(Math.abs(Number(item[year + '營收'].replace(/,/g, ''))) / 10000), // 将特定属性值进行数值处理
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "淨利"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '淨利': Math.round(Math.abs(Number(item[year + '淨利'].replace(/,/g, ''))) / 10000),
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "資本支出"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '資本支出': Math.round(Math.abs(Number(item[year + '資本支出'].replace(/,/g, ''))) / 10000)
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "直接碳排"){
@@ -153,7 +148,7 @@ function setupstackbarmap(data, specificIndustry) {
           '公司': item['公司'],
           '年分': year,
           '直接碳排': Math.round(Math.abs(Number(item[year + '範疇一'].replace(/,/g, ''))) ), // 将特定属性值进行数值处理
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "間接碳排"){
@@ -162,58 +157,52 @@ function setupstackbarmap(data, specificIndustry) {
           '公司': item['公司'],
           '年分': year,
           '間接碳排': Math.round(Math.abs(Number(item[year + '範疇二'].replace(/,/g, ''))) ),
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "產業鏈碳排"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '產業鏈碳排': Math.round(Math.abs(Number(item[year + '範疇三'].replace(/,/g, ''))) )
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "電力使用"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '能源使用': Math.round(Math.abs(Number(item[year + '能源使用'].replace(/,/g, ''))) ), // 将特定属性值进行数值处理
-          // '用水量': Math.round(Math.abs(Number(item[year + '用水量'].replace(/,/g, ''))) ),
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "用水量"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '用水量': Math.round(Math.abs(Number(item[year + '用水量'].replace(/,/g, ''))) ),
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "廢棄物總量"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '廢棄物總量': Math.round(Math.abs(Number(item[year + '廢棄物產生量'].replace(/,/g, ''))) ), // 将特定属性值进行数值处理
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
     if (target == "有害廢棄物"){
       let result = data.filter(item => item['行業'] === specificIndustry) // 根据特定行业参数筛选数据
         .map(item => ({
-          //'行業': item['行業'],
           '公司': item['公司'],
           '年分': year,
           '有害廢棄物': Math.round(Math.abs(Number(item[year + '有害廢棄物'].replace(/,/g, ''))) ),
-        }));
+        })).sort((a, b) => b[target] - a[target]); // 按照y軸大小进行降序排序
         return result;
       }
   }
@@ -269,7 +258,7 @@ function draw_stackbar(res, title,target) {
   
   const width = document.body.clientWidth*0.6; // 设置画布宽度为一半
   const height = 600; // 设置画布高度为 600 像素
-  const chart_margin = { top: 40, right: 40, bottom: 40, left: 40 }; // 设置图表的边距，包含上、右、下、左四个方向的边距值
+  const chart_margin = { top: 60, right: 60, bottom: 60, left: 60 }; // 设置图表的边距，包含上、右、下、左四个方向的边距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 计算图表的宽度，即画布宽度减去左右边距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 计算图表的高度，即画布高度减去上下边距
 
@@ -281,7 +270,7 @@ function draw_stackbar(res, title,target) {
     .attr("font-family", "sans-serif")
     .attr("font-size", 12)
     .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`)
-    .style('font-family', 'Arial'); // 设置字体样式，例如 Arial;
+    .style('font-family', 'Arial') // 设置字体样式，例如 Arial;
 
   const stack = d3.stack()
     .keys(project)
@@ -307,7 +296,7 @@ function draw_stackbar(res, title,target) {
   const yScale = d3.scaleLog() // 创建对数比例尺
     .base(Math.sqrt(10)) // 设置底数为 10
     .domain([1, dmax]) // 设置 Y 轴的刻度范围，从0到数据中最大值
-    .range([chart_height, 0]); // 设置 Y 轴的位置范围
+    .range([chart_height, 40]); // 设置 Y 轴的位置范围
 
   // 颜色比例尺
   const colorScale = d3.scaleOrdinal()
@@ -341,12 +330,13 @@ function draw_stackbar(res, title,target) {
     return d.data.年分; // 设置文本内容
   })
   .attr('x', d => xScale(d.data.公司) + xSubgroup(d.data.年分) + xSubgroup.bandwidth() / 2) // 设置文本的 x 坐标在矩形的中间位置
-  .attr('y', d => yScale(d[0]+1) + 10) // 设置文本的 y 坐标在矩形顶部上方一定距离处
+  .attr('y', d => yScale(d[0]+1) + 12) // 设置文本的 y 坐标在矩形顶部上方一定距离处
   .attr('text-anchor', 'middle') // 设置文本的水平对齐方式为居中对齐
   .attr('dominant-baseline', 'baseline') // 设置文本的垂直对齐方式为基线对齐
   .style('font-size', '12px') // 设置文本的字体大小
   .style('fill', 'black') // 设置文本的颜色为黑色
-  .style('font-family', 'Arial'); // 设置字体样式，例如 Arial
+  .style('font-family', 'Arial') // 设置字体样式，例如 Arial
+  .style('font-weight', 'normal');
 
 
   
@@ -360,7 +350,7 @@ function draw_stackbar(res, title,target) {
     .tickSize(0); // 设置刻度线的长度为0，即不显示刻度线
 
   const xAxisDraw = svg.append('g')
-    .attr('transform', `translate(0, ${chart_height+10})`) // 将 X 轴向下平移至图表底部
+    .attr('transform', `translate(0, ${chart_height+15})`) // 将 X 轴向下平移至图表底部
     .attr('class', 'xaxis')
     .style('font-size', 16)
     .call(xAxis) // 绘制 X 轴

@@ -1,15 +1,15 @@
 body {
     font-weight: bold;
     margin: 2rem;
-}
-svg {
-    background-color: rgb(255, 255, 255,0.2); /* 完全不透明的黑色背景 */
     background-image: url('background.jpg');
     background-repeat: no-repeat;
     background-size: 140px 80px;
-    background-position: 50% 0%;
+    background-position: 50% 5%;
     background-color: rgba(255, 255, 255, 0.8); 
-} 
+}
+/* svg {
+    
+}  */
 
 .tree-chart-container {
     border: 1px solid #ccc;
