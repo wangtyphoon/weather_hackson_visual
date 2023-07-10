@@ -16,7 +16,9 @@ export default function drawscatter(specificIndustry){
     radioContainerX.append("input")
     .attr("type", "radio")
     .attr("id", "radioa")
-    .attr("name", "myRadioButtonsX"); // 设置相同的 name 属性
+    .attr("name", "myRadioButtonsX") // 设置相同的 name 属性
+    .attr("checked", true); // 預設選擇項目
+
     radioContainerX.append("label")
     .attr("for", "radioa")
     .text("營收");
@@ -56,7 +58,9 @@ export default function drawscatter(specificIndustry){
     radioContainerY.append("input")
     .attr("type", "radio")
     .attr("id", "radioA")
-    .attr("name", "myRadioButtonsY"); // 设置相同的 name 属性
+    .attr("name", "myRadioButtonsY") // 设置相同的 name 属性
+    .attr("checked", true); // 預設選擇項目
+    
     radioContainerY.append("label")
     .attr("for", "radioA")
     .text("碳排");
@@ -322,8 +326,13 @@ legendItems.append("rect")
         .attr("id", "mouse-text") // 設定獨特的 ID
         .attr("x", xScale(d.x) + 10) // 在原點右側 10 個單位處顯示文字方塊
         .attr("y", yScale(d.y))
-        .text(d.公司)
-        .attr("font-size", 12)
+        .text(() => {
+          if (d.y === 1) {
+            return `${d.公司}\t${xkey + ': ' + d.x}\t 無資料`;
+          } else {
+            return `${d.公司}\t${xkey + ': ' + d.x}\t ${ykey + ': ' + d.y}`;
+          }
+        })        .attr("font-size", 12)
         .attr("fill", "black")
         .attr("font-weight", "bold")
         .attr("text-anchor", "start")
