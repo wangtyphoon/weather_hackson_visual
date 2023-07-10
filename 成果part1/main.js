@@ -1,6 +1,21 @@
-// import click from './select.js';  引用別的js目前無用
+import barpage from './stackbar.js';  
 // 定義下拉菜單的數據
-function homepage(){
+export default function homepage(){
+  killall()
+  // 創建 tree-chart-container 元素
+  var barChartContainer = d3.select("body")
+  .append("div")
+  .attr("class", "tree-chart-container");
+
+  // 創建 controls 元素
+  var controlsContainer = d3.select("body")
+  .append("div")
+  .attr("class", "controls");
+
+  // 創建 select 元素
+  var selectElement = controlsContainer.append("select")
+  .attr("id", "dropdown");
+
   const dropdownData = [
     { label: '2020', options: ['營收', '淨利', '資本支出'] },
     { label: '2021', options: ['營收', '淨利', '資本支出'] }
@@ -9,6 +24,7 @@ function homepage(){
   // 選擇下拉菜單的容器元素，並設置樣式
   const dropdown = d3.select('#dropdown')
     .style('position', 'fixed')
+    .style('font-size',"16px")
     .style('top', '40px')
     .style('left', '40px');
   
@@ -25,14 +41,14 @@ function homepage(){
   });
   function nan(d) {
     return {
-      '行業': parseNA(d['行業']), // 將屬性 category 的值進行 parseNA 轉換
-      '公司': parseNA(d['公司']), 
-      '2020營收': parseNA(d['2020_營收']), 
-      '2020淨利': parseNA(d['2020_淨利']), 
-      '2020資本支出': parseNA(d['2020_資本支出']), 
-      '2021營收': parseNA(d['2021_營收']), 
-      '2021淨利': parseNA(d['2021_淨利']), 
-      '2021資本支出': parseNA(d['2021_資本支出']), 
+      '行業': parseNA(d['Type']), // 將屬性 category 的值進行 parseNA 轉換
+      '公司': parseNA(d['Name']), 
+      '2020營收': parseNA(d['2020_revenue']), 
+      '2020淨利': parseNA(d['2020_net_income']), 
+      '2020資本支出': parseNA(d['2020_Capital Expenditure']), 
+      '2021營收': parseNA(d['2021_revenue']), 
+      '2021淨利': parseNA(d['2021_net_income']), 
+      '2021資本支出': parseNA(d['2021_Capital Expenditure']), 
     };
   }
   // 定義解析 'NA' 字串的函數，將其轉換為 undefined
@@ -40,14 +56,13 @@ function homepage(){
 
   // 使用 d3.csv() 方法從 'example.csv' 讀取資料，並在讀取完成後執行指定的回呼函式
   d3.csv('example.csv',nan).then(res => {
-    console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
+    // console.log('local csv', res); // 在控制台輸出從 CSV 檔案讀取的資料的第一個物件
     setuptreemap(res)
 
   // 印出轉換後的結果
 });
 
 }
-homepage()///呼叫此頁面
 
 function setuptreemap(data) {
   let res = data;
@@ -79,19 +94,19 @@ function setuptreemap(data) {
 }
 
 
-
+//畫樹圖
 function draw(res, keywords) {
-  d3.selectAll('.bar-chart-container svg').remove(); // 移除所有具有 'bar-chart-container' 類別的元素中的 SVG 元素
+  d3.selectAll('.tree-chart-container svg').remove(); // 移除所有具有 'tree-chart-container' 類別的元素中的 SVG 元素
 
 
 
-  const width = 900; // 設定畫布的寬度為 800 像素
-  const height = 700; // 設定畫布的高度為 600 像素
+  const width = 1200; // 設定畫布的寬度為 800 像素
+  const height = 960; // 設定畫布的高度為 600 像素
   const chart_margin = { top: 80, right: 40, bottom: 80, left: 40 }; // 設定圖表的邊距，包含上、右、下、左四個方向的邊距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 計算圖表的寬度，即畫布寬度減去左右邊距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 計算圖表的高度，即畫布高度減去上下邊距
   
-  const svg = d3.selectAll('.bar-chart-container')
+  const svg = d3.selectAll('.tree-chart-container')
     .append('svg') // 創建 svg 元素
     .attr('width', width) // 設定 svg 元素的寬度
     .attr('height', height) // 設定 svg 元素的高度
@@ -115,7 +130,7 @@ function draw(res, keywords) {
   var tiles = root.leaves();
 // // 獲取層次結構中的葉子節點，也就是最底層的節點
   var treemap = d3.treemap()
-    .size([width - chart_margin.left - chart_margin.right, height - chart_margin.top - chart_margin.bottom])
+    .size([chart_width, chart_height])
     .paddingInner(3).paddingTop(15).paddingRight(3).paddingBottom(3).paddingLeft(3).round(true);
 // // 創建 treemap 函式，設定大小、內部間距和圓角等屬性
 
@@ -153,30 +168,41 @@ function draw(res, keywords) {
   
   var lastClickTime = 0;
   var delay = 300; // 设置双击间隔时间，单位为毫秒
-
+  
+  let parentNodes = root.descendants().filter(function(d) { return d.depth === 1; });//treemap 母類別名稱
+                      
   canvas.append('rect')
         .attr('class','tiles')
         .attr('fill',(d)=>{
           var cat = d.data['行業'];
           // console.log(cat)
-          if (cat === 'computer and peripheral equipment'){
-            return 'orange';
+          if (cat === '電子通路與零組件業'){
+            return 'orchid';
           }
-          else if(cat === 'plastics'){
+          else if(cat === '電腦及周邊設備業'){
             return 'blue';
           }
-          else if(cat === 'rubber'){
+          else if(cat === '輕工業'){
+            return '#FCD12A';
+          }
+          else if(cat === '重工業'){
             return 'red';
           }
-          else if(cat === 'other electronics'){
-            return 'yellow';
+          else if(cat === '半導體業'){
+            return '#29AB87';
+          }
+          else if(cat === '金融保險業'){
+            return '#FD6A02';
+          }
+          else if(cat === '服務業'){
+            return '#B1560F';
           }
         })
         .attr('name',(d)=>{
           return d['公司'];
         })
         .attr('category',(d)=>{
-          return d['行業'];
+          return d.data['行業'];
         })
         .attr('value',(d)=>{
           return d['value'];
@@ -189,7 +215,7 @@ function draw(res, keywords) {
         })
         .attr("opacity",function(d){ return opacity(d.data['value'])}) //矩形透明度
         .attr("stroke", "black")
-        .attr("stroke-width", 1) //矩形邊框
+        .attr("stroke-width", 2) //矩形邊框
         .on("mouseover", function() {
           d3.select(this)
             .transition()
@@ -197,10 +223,12 @@ function draw(res, keywords) {
             .attr("transform", "scale(1.2)"); // 放大矩形
         })
         .on("dblclick",function(){
-          var currentTime = new Date().getTime();
+          let currentTime = new Date().getTime();
           if (currentTime - lastClickTime > delay) {
             killall()
             lastClickTime = currentTime;
+            let specificIndustry = this.getAttribute('category') // 獲得類別參數以傳送給barpage
+            barpage(specificIndustry)
           }
         })
         .on("mouseout", function() {
@@ -238,7 +266,6 @@ canvas.append('text')
   .style('text-anchor', 'middle') // 水平居中
   .style('dominant-baseline', 'middle'); // 垂直居中;
 // 篩選出深度為 1 的節點作為圖例的數據
-let parentNodes = root.descendants().filter(function(d) { return d.depth === 1; });
 
 // 在 svg 中添加圖例群組元素
 const legend = svg.append('g')
@@ -258,14 +285,26 @@ const legendItems = legend.selectAll('.text')
   .attr('fill', (d) => {
     var cat = d.data['0'];
     // 根據不同的類別設定不同的填充顏色
-    if (cat === 'computer and peripheral equipment') {
-      return 'orange';
-    } else if (cat === 'plastics') {
+    if (cat === '電子通路與零組件業'){
+      return 'orchid';
+    }
+    else if(cat === '電腦及周邊設備業'){
       return 'blue';
-    } else if (cat === 'rubber') {
+    }
+    else if(cat === '輕工業'){
+      return '#FCD12A';
+    }
+    else if(cat === '重工業'){
       return 'red';
-    } else if (cat === 'other electronics') {
-      return 'yellow';
+    }
+    else if(cat === '半導體業'){
+      return '#29AB87';
+    }
+    else if(cat === '金融保險業'){
+      return '#FD6A02';
+    }
+    else if(cat === '服務業'){
+      return '#B1560F';
     }
   });
 
@@ -279,12 +318,10 @@ svg.append('text')
   .text(keywords); // 使用傳入的 keywords 參數作為標題文字
 }
 
-
-
-
-
- 
+//////移除所有元素
 function killall(){
-  d3.selectAll('.bar-chart-container svg').remove(); // 移除所有具有 'bar-chart-container' 類別的元素中的 SVG 元素
+  d3.selectAll('.tree-chart-container').remove(); // 移除所有具有 'tree-chart-container' 類別的元素中的 SVG 元素
   d3.selectAll('#dropdown').remove();//移除下拉式選單
 }
+
+homepage()///呼叫此頁面
