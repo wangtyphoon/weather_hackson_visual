@@ -205,15 +205,33 @@ function drawplot(data,xkey,ykey,specificIndustry){
     data.forEach(d => {
         d.x += xOffset; // 將負數 x 值加上偏移量
     })
+    const xScale = d3.scaleLog() // 创建对数比例尺
+        .base(Math.sqrt(10)) // 设置底数为 10
+        .domain(d3.extent(data.map(d => d.x)))
+        .range([40, chart_width ]);
+    const yScale = d3.scaleLog() // 创建对数比例尺
+        .base(Math.sqrt(10)) // 设置底数为 10
+        .domain(d3.extent(data.map(d => d.y)))
+        .range([chart_height, 40]);
      // 添加文字方塊標記 x 軸偏移量
     svg.append("text")
-    .attr("x", width / 2) // 在圖表水平中心位置
+    .attr("x", xScale(xOffset)) // 在圖表水平中心位置
     .attr("y", 20) // 在圖表上方偏移 20 個單位
     .text(`x 軸偏移量為+ ${Math.round(xOffset/10000)}萬元`)
     .attr("font-size", 12)
     .attr("fill", "black")
     .attr("text-anchor", "middle")
     .attr("alignment-baseline", "middle");
+    // 增加輔助偏移線，處理x負值
+    svg
+    .append("line")
+    .attr("x1", xScale(xOffset))
+    .attr("y1", yScale(d3.min(data, d => d.y)))
+    .attr("x2", xScale(xOffset))
+    .attr("y2", yScale(d3.max(data, d => d.y)))
+    .attr("stroke", "black")
+    .attr("stroke-width", 1.5)
+    .attr("fill", "none");
   }
   
   data = data.map(d => {
@@ -335,7 +353,7 @@ legendItems.append("rect")
         })        .attr("font-size", 12)
         .attr("fill", "black")
         .attr("font-weight", "bold")
-        .attr("text-anchor", "start")
+        .attr("text-anchor", "middle")
         .attr("alignment-baseline", "middle")
         .attr("pointer-events", "none"); // 避免文字方塊擋住滑鼠事件
     })

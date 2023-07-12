@@ -310,17 +310,37 @@ function draw_stackbar(res, title,target) {
   .attr("fill", d => colorScale(d.key)); // 设置堆叠条形图的填充颜色
 
   canvas.selectAll("rect")
-  .data(d => d) // 绑定每组数据
-  .join("rect") // 创建矩形元素用于绘制每个堆叠条形图
-  .attr("x", d => xScale(d.data.公司)+xSubgroup(d.data.年分)) // 设置矩形的 x 坐标，对应公司名称
-  .attr("y", yScale(1)) // 设置初始的 y 坐标为底部
-  .attr("height", 0) // 设置初始高度为0
-  .attr("width", xSubgroup.bandwidth()) // 设置矩形的宽度，根据比例尺的间隔比例计算得出
-  .transition() // 添加过渡效果
-  .duration(1000) // 过渡的持续时间
-  .delay((d, i) => i * 100) // 每个矩形的延迟时间，实现逐个绘制的效果
-  .attr("y", d => yScale(d[1]+1)) // 设置矩形的目标 y 坐标，对应堆叠的顶部
-  .attr("height", d => yScale(d[0]+1) - yScale(d[1]+1)); // 设置矩形的目标高度，根据堆叠的高度差计算得出
+  .data(d => d)
+  .join("rect")
+  .attr("x", d => xScale(d.data.公司) + xSubgroup(d.data.年分))
+  .attr("y", yScale(1))
+  .attr("height", 0)
+  .attr("width", xSubgroup.bandwidth())
+  .on("mouseover", function(event, d) { // 滑鼠懸停事件
+    canvas.append("text")
+      .attr("class", "value-label")
+      .attr("x", xScale(d.data.公司) + xSubgroup(d.data.年分) + xSubgroup.bandwidth() / 2)
+      .attr("y", yScale(d[1] + 1.2) - 15) // 文字方塊上移15個單位
+      .text(d[1] - d[0]) // 顯示矩形值
+      .attr("font-size", 12)
+      .attr("fill", "black")
+      .attr("font-weight", "bold")
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .attr("pointer-events", "none"); // 避免文字方塊擋住滑鼠事件
+  })
+  .on("mouseout", function(event, d) { // 滑鼠離開事件
+    // 移除文字方塊
+    canvas.select(".value-label").remove();
+  })
+  .transition()
+  .duration(1000)
+  .delay((d, i) => i * 100)
+  .attr("y", d => yScale(d[1] + 1))
+  .attr("height", d => yScale(d[0] + 1) - yScale(d[1] + 1))
+  
+
+  
 
   canvas.selectAll("text")
   .data(d => d.filter(item => item[0] === 0)) // 绑定满足条件的数据
