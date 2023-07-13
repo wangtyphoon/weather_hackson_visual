@@ -257,7 +257,7 @@ function draw_stackbar(res, title,target) {
   }
   
   const width = document.body.clientWidth*0.6; // 设置画布宽度为一半
-  const height = 600; // 设置画布高度为 600 像素
+  const height = document.body.clientWidth*0.4; // 设置画布高度为 600 像素
   const chart_margin = { top: 60, right: 60, bottom: 60, left: 60 }; // 设置图表的边距，包含上、右、下、左四个方向的边距值
   const chart_width = width - (chart_margin.left + chart_margin.right); // 计算图表的宽度，即画布宽度减去左右边距
   const chart_height = height - (chart_margin.top + chart_margin.bottom); // 计算图表的高度，即画布高度减去上下边距
@@ -333,7 +333,7 @@ function draw_stackbar(res, title,target) {
     // 移除文字方塊
     canvas.select(".value-label").remove();
   })
-  .transition()
+  .transition()  //彈出動畫控制
   .duration(1000)
   .delay((d, i) => i * 100)
   .attr("y", d => yScale(d[1] + 1))

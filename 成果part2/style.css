@@ -1,11 +1,6 @@
 body {
     font-weight: bold;
     margin: 2rem;
-    background-image: url('background.jpg');
-    background-repeat: no-repeat;
-    background-size: 140px 80px;
-    background-position: 50% 5%;
-    background-color: rgba(255, 255, 255, 0.8); 
 }
 /* svg {
     
@@ -13,10 +8,21 @@ body {
 
 .tree-chart-container {
     border: 1px solid #ccc;
+    background-image: url('background.jpg');
+    background-repeat: no-repeat;
+    background-size: 150px 100px;
+    background-position: 35% 0%;
+    background-color: rgba(255, 255, 255, 0.8); 
 }
 
 .stackbar-chart-container {
     border: 1px solid #ccc;
+    border: 1px solid #ccc;
+    background-image: url('background.jpg');
+    background-repeat: no-repeat;
+    background-size: 150px 100px;
+    background-position: 50% 0%;
+    background-color: rgba(255, 255, 255, 0.8); 
 }
 
 
