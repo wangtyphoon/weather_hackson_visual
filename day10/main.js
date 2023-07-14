@@ -120,7 +120,7 @@ function draw(res, keywords) {
     .attr("font-size", 12)
     .attr('transform', `translate(${chart_margin.left},${chart_margin.top})`)
     ; // 設定 g 元素的平移位置，以適應圖表邊距
- 
+  
   let groupedData = d3.group(res, function(res) {
     return res.行業; // 根據 category 屬性將資料進行分組
   });
