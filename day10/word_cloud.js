@@ -42,8 +42,35 @@ function drawcloud(xPos,yPos,words){
   const svg = container.append("svg")
     .attr("width", chart_width)
     .attr("height", chart_height)
-    .style("background-image", "url(http://127.0.0.1:5500/cloud.jpg)")
-    .style("background-size", "cover");
+    .style("background-image", "url(http://127.0.0.1:5500/cloud.png)")
+    .style("background-size", "800px 800px")
+    .style("background-repeat","no-repeat")
+    .style("background-position", "60% 60%");
+
+  // 風險插圖
+svg.append("image")
+.attr("href", "http://127.0.0.1:5500/risk.jpg")
+.attr("width", 50)
+.attr("height", 50)
+.attr("x", 480)
+.attr("y", 300);
+
+// 目標插圖
+svg.append("image")
+.attr("href", "http://127.0.0.1:5500/target.jpg")
+.attr("width",50)
+.attr("height", 50)
+.attr("x", 380)
+.attr("y", 360);
+
+// 策略插圖
+svg.append("image")
+.attr("href", "http://127.0.0.1:5500/strategy.jpg")
+.attr("width",50)
+.attr("height", 50)
+.attr("x", 505)
+.attr("y", 415);
+
     
 // Constructs a new cloud layout instance. It run an algorithm to find the position of words that suits your requirements
 // Wordcloud features that are different from one word to the other must be here
@@ -66,12 +93,12 @@ function draw(words) {
     .enter()
     .append("text")
     .style("font-size", function(d) { return d.size; })
-    .style("fill", "green")
+    .style("fill", "#00A86B")
     .attr("text-anchor", "middle")
     .style("font-family", "Impact")
     .attr("transform", function(d) {
     console.log(d.x)
-    return "translate(" + [d.x+chart_width/6, d.y] + ")rotate(" + d.rotate + ")";
+    return "translate(" + [d.x+450, d.y-80] + ")rotate(" + d.rotate + ")";
     })
     .text(function(d) { return d.text; });
   
@@ -82,12 +109,12 @@ function draw(words) {
     .enter()
     .append("text")
     .style("font-size", function(d) { return d.size; })
-    .style("fill", "red")
+    .style("fill", "#9966CB")
     .attr("text-anchor", "middle")
     .style("font-family", "Impact")
     .attr("transform", function(d) {
     console.log(d.x)
-    return "translate(" + [d.x+chart_width/3, d.y+chart_height/3] + ")rotate(" + d.rotate + ")";
+    return "translate(" + [d.x+450, d.y+chart_height/3] + ")rotate(" + d.rotate + ")";
     })
     .text(function(d) { return d.text; });
   
@@ -98,12 +125,12 @@ function draw(words) {
     .enter()
     .append("text")
     .style("font-size", function(d) { return d.size; })
-    .style("fill", "blue")
+    .style("fill", "#F9A602")
     .attr("text-anchor", "middle")
     .style("font-family", "Impact")
     .attr("transform", function(d) {
     console.log(d.x)
-    return "translate(" + [d.x, d.y+chart_height/3] + ")rotate(" + d.rotate + ")";
+    return "translate(" + [d.x-75, d.y+150] + ")rotate(" + d.rotate + ")";
     })
     .text(function(d) { return d.text; });
   }
