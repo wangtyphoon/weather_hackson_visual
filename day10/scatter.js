@@ -341,7 +341,7 @@ function drawplot(data, xkey, ykey, specificIndustry) {
     .attr("cy", d => yScale(d.y)) // 设置圆心的 y 坐标为根据 y 值的比例尺计算得到的值
     .attr("r", d => {
       if (d.行業 === specificIndustry) {
-        return 15; // 如果数据所属行业与指定行业相同，设置半径为 15
+        return 12; // 如果数据所属行业与指定行业相同，设置半径为 15
       } else {
         return 10; // 如果数据所属行业与指定行业不同，设置半径为 10
       }
@@ -373,7 +373,7 @@ function drawplot(data, xkey, ykey, specificIndustry) {
       d3.select(event.currentTarget)
         .attr("r", d => {
           if (d.行業 === specificIndustry) {
-            return 20; // 如果数据所属行业与指定行业相同，设置半径为 20
+            return 15; // 如果数据所属行业与指定行业相同，设置半径为 20
           } else {
             return 12; // 如果数据所属行业与指定行业不同，设置半径为 12
           }
@@ -402,7 +402,7 @@ function drawplot(data, xkey, ykey, specificIndustry) {
       d3.select(event.currentTarget)
         .attr("r", d => {
           if (d.行業 === specificIndustry) {
-            return 15; // 如果数据所属行业与指定行业相同，恢复半径为 15
+            return 12; // 如果数据所属行业与指定行业相同，恢复半径为 15
           } else {
             return 10; // 如果数据所属行业与指定行业不同，恢复半径为 10
           }
