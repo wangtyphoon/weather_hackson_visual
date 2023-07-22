@@ -10,8 +10,8 @@ def convert_big5_to_utf8(input_csv, output_csv):
                 updated_row = [value if value != 'NaN' else 'nan' for value in row]
                 writer.writerow(updated_row)
 
-input_csv = 'tcfd.csv'
-output_csv = 'example-tcfd.csv'
+input_csv = '資料蒐集.csv'
+output_csv = 'example-Carbon.csv'
 
 convert_big5_to_utf8(input_csv, output_csv)
 

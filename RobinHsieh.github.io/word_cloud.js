@@ -28,7 +28,7 @@ function drawcloud(xPos,yPos,words){
   // 在新視窗的 head 元素中引入外部 CSS 檔案
   const link = newWindow.document.createElement("link");
   link.rel = "stylesheet";
-  link.href = "http://127.0.0.1:5500/RobinHsieh.github.io/all.css"; // 請替換為你的本地 CSS 檔案的路徑
+  link.href = "http://127.0.0.1:5500/RobinHsieh.github.io/stylesheets/all.css"; // 請替換為你的本地 CSS 檔案的路徑
   newWindow.document.head.appendChild(link);
   // 在新視窗內創建一個 <div> 元素，並設置其寬度和高度
   const container = d3.select(newWindow.document.body)
