@@ -134,4 +134,47 @@ function draw(words) {
     })
     .text(function(d) { return d.text; });
   }
+  
+//   // 设置弧度路径的半径
+// const radius = 150;
+
+// // 设置弧度路径的坐标和大小
+// const arc = d3.arc()
+//     .innerRadius(radius)
+//     .outerRadius(radius);
+
+// // 数据数组，这里假设有三段弧度路径
+// const data = [
+//     { startAngle: 0, endAngle: Math.PI / 2, label: "Section 1" },
+//     { startAngle: Math.PI / 2, endAngle: Math.PI, label: "Section 2" },
+//     { startAngle: Math.PI, endAngle: 3 * Math.PI / 2, label: "Section 3" }
+// ];
+
+// const arcs = svg.selectAll("g.arc")
+//     .data(data)
+//     .enter()
+//     .append("g")
+//     .attr("class", "arc")
+//     .attr("transform", "translate(200, 200)");
+
+// // 在弧度路径上添加弧
+// arcs.append("path")
+//     .attr("d", d => arc(d))
+//     .attr("fill", "none")
+//     .attr("stroke", "#333")
+//     .attr("stroke-width", 2);
+
+// // 在弧度路径上添加文字
+// arcs.append("text")
+//     .attr("transform", d => {
+//         const pos = arc.centroid(d);
+//         // 在文字的中心点沿着半径方向稍微偏移一些，以使其看起来更好
+//         const xOffset = pos[0] * 0.7;
+//         const yOffset = pos[1] * 0.7;
+//         return `translate(${pos[0] + xOffset}, ${pos[1] + yOffset})`;
+//     })
+//     .attr("text-anchor", "middle")
+//     .text(d => d.label)
+//     .attr("fill", "#333")
+//     .style("font-size", "12px");
 }
