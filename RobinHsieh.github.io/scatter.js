@@ -490,6 +490,15 @@ function drawplot(data, xkey, ykey, specificIndustry) {
     .attr("dominant-baseline", "hanging") // 文字垂直对齐方式为悬挂对齐
     .style("font-size", "16px"); // 文字字体大小为 16px
 
+    svg.append("text")
+    .attr("x", chart_width/2+chart_margin.left) // x 坐标为图表宽度的一半，使标题居中
+    .attr("y", chart_margin.top/2) // y 坐标为图表高度，使标题位于图表底部
+    .text("雙擊圓點可見詳細資料")
+    .attr("fill", "brown") // 文字颜色为黑色
+    .attr("text-anchor", "middle") // 文字水平对齐方式为居中对齐
+    .attr("dominant-baseline", "hanging") // 文字垂直对齐方式为悬挂对齐
+    .style("font-size", "20px"); // 文字字体大小为 16px
+
     svg.append("line")
       .attr("x1", xScale(d3.min(data, d => d.x))) // 设置起始点的 x 坐标为数据中 x 的最小值经过 x 比例尺转换得到的值
       .attr("y1", yScale(d3.min(data, d => d.y))) // 设置起始点的 y 坐标为数据中 y 的最小值经过 y 比例尺转换得到的值

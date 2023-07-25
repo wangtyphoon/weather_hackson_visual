@@ -131,10 +131,10 @@ function createWordCloud(words, color, xPos, yPos) {
 }
 
 // Usage example for draw1 and draw2
-createWordCloud(words.map(function(d) { return { text: d.E達成, size: d.重要度+2 }; }), "#00A86B",600, 430);
-createWordCloud(words.map(function(d) { return { text: d.E目標, size: d.重要度+2 }; }), "#9966CB", 0, 250);
-createWordCloud(words.map(function(d) { return { text: d.轉型風險, size: d.重要度+2 }; }), "#F9A602", 400, -30);
-createWordCloud(words.map(function(d) { return { text: d.實體風險, size: d.重要度+2 }; }), "red", 650, 70);
+createWordCloud(words.map(function(d) { return { text: d.E達成, size: d.重要度+4 }; }), "#00A86B",600, 430);
+createWordCloud(words.map(function(d) { return { text: d.E目標, size: d.重要度+4 }; }), "#9966CB", 0, 250);
+createWordCloud(words.map(function(d) { return { text: d.轉型風險, size: d.重要度+4 }; }), "#F9A602", 400, -30);
+createWordCloud(words.map(function(d) { return { text: d.實體風險, size: d.重要度+4 }; }), "red", 650, 70);
 
 // 设置弧度路径的半径
 const radius = 125;
