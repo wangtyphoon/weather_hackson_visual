@@ -100,7 +100,7 @@ function createWordCloud(words, color, xPos, yPos) {
 
   function draw(words) {
 
-    //確認文字雲位置
+    // 確認文字雲位置
     // const cloudWidth = layout.size()[0];
     // const cloudHeight = layout.size()[1];
 

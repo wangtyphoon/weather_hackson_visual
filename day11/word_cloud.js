@@ -5,7 +5,9 @@ export default function word_cloud(xPos,yPos,company){
         'E目標': (d['E~目標']), // 将属性 '產業類別' 的值进行转换
         '實體風險': (d['實體風險']), // 将属性 '產業類別' 的值进行转换
         '轉型風險': (d['轉型風險']), // 将属性 '產業類別' 的值进行转换
-        '重要度'    : Number(d['重要度'])
+        '重要度'  : Number(d['重要度']),
+        'cdp'    : d['CDP'],
+        'sbti'   : d['SBTI']
       }
     }
     let path = "csv/"+company.slice(-4)+".csv";
@@ -16,8 +18,11 @@ export default function word_cloud(xPos,yPos,company){
 }
 
 function drawcloud(xPos,yPos,words,company){
-  // console.log(d.E達成)
+  // console.log(cdp)
   // 指定新視窗的尺寸和位置
+  const cdp = words[0].cdp;
+  const sbti = words[0].sbti;
+  console.log(cdp)
   const windowWidth = 1080;
   const windowHeight = 1080;
   const windowLeft = window.screenX + xPos;
@@ -49,7 +54,12 @@ function drawcloud(xPos,yPos,words,company){
   .style("font-weight", "bold")
   .text(company+" 風險、目標與成果彙整報告"); // 請替換成你想要的標題文字
 
-
+  // 副標題
+  container.append("div")
+    .attr("id", "subtitle")
+    .style("text-align", "center")
+    .style("font-size", "28px")
+    .html("CDP climate change grade: " + cdp + "&nbsp;&nbsp;&nbsp;&nbsp;SBTI target classification: " + sbti);
 
 // 在 <div> 元素中創建一個 SVG 元素
   const svg = container.append("svg")
