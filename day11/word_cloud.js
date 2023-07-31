@@ -3,8 +3,7 @@ export default function word_cloud(xPos,yPos,company){
       return {
         'E達成': (d['E~達成']), // 将属性 '產業類別' 的值进行转换
         'E目標': (d['E~目標']), // 将属性 '產業類別' 的值进行转换
-        '實體風險': (d['實體風險']), // 将属性 '產業類別' 的值进行转换
-        '轉型風險': (d['轉型風險']), // 将属性 '產業類別' 的值进行转换
+        '風險': (d['風險']), // 将属性 '產業類別' 的值进行转换
         '重要度'  : Number(d['重要度']),
         'cdp'    : d['CDP'],
         'sbti'   : d['SBTI']
@@ -99,7 +98,7 @@ svg.append("image")
 // Wordcloud features that are different from one word to the other must be here
 function createWordCloud(words, color, xPos, yPos) {
   let layout = d3.layout.cloud()
-    .size([325, 250])
+    .size([350, 300])
     .words(words.map(function(d) { return { text: d.text, size: d.size }; }))
     .padding(5) // space between words
     .rotate(0)
@@ -110,19 +109,19 @@ function createWordCloud(words, color, xPos, yPos) {
 
   function draw(words) {
 
-    //確認文字雲位置
-    // const cloudWidth = layout.size()[0];
-    // const cloudHeight = layout.size()[1];
+    // // 確認文字雲位置
+    const cloudWidth = layout.size()[0];
+    const cloudHeight = layout.size()[1];
 
-    // svg.append("rect")
-    //   .attr("x", xPos - cloudWidth / 2)
-    //   .attr("y", yPos - cloudHeight / 2)
-    //   .attr("width", cloudWidth)
-    //   .attr("height", cloudHeight)
-    //   .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-    //   .attr("fill", "none")
-    //   .attr("stroke", "black")
-    //   .attr("stroke-width", 1);
+    svg.append("rect")
+      .attr("x", xPos - cloudWidth / 2)
+      .attr("y", yPos - cloudHeight / 2)
+      .attr("width", cloudWidth)
+      .attr("height", cloudHeight)
+      .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1);
     svg.append("g")
       .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
       .selectAll("text")
@@ -141,10 +140,10 @@ function createWordCloud(words, color, xPos, yPos) {
 }
 
 // Usage example for draw1 and draw2
-createWordCloud(words.map(function(d) { return { text: d.E達成, size: d.重要度+4 }; }), "#00A86B",600, 430);
-createWordCloud(words.map(function(d) { return { text: d.E目標, size: d.重要度+4 }; }), "#9966CB", 0, 250);
-createWordCloud(words.map(function(d) { return { text: d.轉型風險, size: d.重要度+4 }; }), "#F9A602", 400, -30);
-createWordCloud(words.map(function(d) { return { text: d.實體風險, size: d.重要度+4 }; }), "red", 650, 70);
+createWordCloud(words.map(function(d) { return { text: d.E達成, size: d.重要度}; }), "#00A86B",600, 430);
+createWordCloud(words.map(function(d) { return { text: d.E目標, size: d.重要度 }; }), "#9966CB", 0, 250);
+// createWordCloud(words.map(function(d) { return { text: d.轉型風險, size: d.重要度+4 }; }), "#F9A602", 400, -30);
+createWordCloud(words.map(function(d) { return { text: d.風險, size: d.重要度 }; }), "red", 600, 20);
 
 // 设置弧度路径的半径
 const radius = 125;
